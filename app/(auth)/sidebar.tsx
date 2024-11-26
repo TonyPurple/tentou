@@ -34,7 +34,8 @@ const links = [
 export function Sidebar() {
   const pathname = usePathname();
   return (
-    <>
+    <div className="flex flex-col justify-between h-full gap-4 py-2">
+      <div>
       <div className="flex h-14 mb-4 items-center border-b px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Package2 className="size-6" />
@@ -42,7 +43,6 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <div>
         <nav className="grid gap-1 px-2">
           {links.map(link => (
             <Link
@@ -95,6 +95,6 @@ export function Sidebar() {
           </DropdownMenu>
         </div>
       </div>
-    </>
+    </div>
   );
 }
