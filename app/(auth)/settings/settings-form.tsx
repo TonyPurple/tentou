@@ -14,6 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Doc } from "@/convex/_generated/dataModel";
+import { updateUser } from "@/convex/users";
+import { toast } from "@/components/ui/use-toast";
+import { ConvexError } from "convex/values";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const settingsFormSchema = z.object({
   username: z.string().min(3, {
@@ -29,19 +35,40 @@ const settingsFormSchema = z.object({
 
 type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
-export function SettingsForm() {
+type Props = {
+  user: Doc<"users">;
+};
+
+export function SettingsForm({ user }: Props) {
+  const updateUser = useMutation(api.users.updateUser);
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues: {
-      username: "",
-      name: "",
-      about: "",
+      ...user,
     },
     mode: "onChange",
   });
 
   async function onSubmit(values: SettingsFormValues) {
-    console.log(values);
+    try {
+      await updateUser({
+        username: values.username,
+        name: values.name,
+        about: values.about,
+        userId: user._id,
+      });
+      toast({ description: "Settings updated" });
+    } catch (error) {
+      const message = error instanceof ConvexError ? error.data : "";
+
+      if (message === "USERNAME_TAKEN") {
+        form.setError("username", {
+          message: "Username taken. Please choose another",
+        });
+      } else {
+        toast({ description: "Failed to update settings" });
+      }
+    }
   }
 
   return (
