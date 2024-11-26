@@ -1,15 +1,6 @@
 import { v } from "convex/values";
-import { internalMutation, query } from "./_generated/server";
-import { generateUsername} from 'friendly-username-generator';
-
-export const getUsers = query({
-  args: {
-    userId: v.id("users"),
-  },
-  handler: async (ctx, { userId }) => {
-    return ctx.db.get(userId);
-  },
-});
+import { internalMutation } from "./_generated/server";
+import { generateUsername } from "friendly-username-generator";
 
 export const createUser = internalMutation({
   args: {
