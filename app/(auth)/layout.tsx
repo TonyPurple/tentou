@@ -1,10 +1,13 @@
 import { Sidebar } from "@/app/(auth)/sidebar";
+import { auth } from "@clerk/nextjs/server";
 
 type Props = {
   children: React.ReactNode;
 };
 
 export default function AuthLayout({ children }: Props) {
+  auth().protect();
+
   return (
     <div className="flex min-h-svh">
       <div className="fixed inset-y-0 left-0 w-64 max-lg:hidden">
