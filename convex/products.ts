@@ -3,10 +3,12 @@ import {
   getProductsByClerkId,
   getSalesByProductId,
   getUserByClerkId,
+  getUserByUsername,
   mutationWithUser,
   queryWithUser,
 } from "./utils";
 import { Id } from "./_generated/dataModel";
+import { query } from "./_generated/server";
 
 export const getProduct = queryWithUser({
   args: {
@@ -111,5 +113,16 @@ export const deleteProduct = mutationWithUser({
     }
 
     await ctx.db.delete(productId);
+  },
+});
+
+export const getStorePage = query({
+  args: {
+    username: v.string(),
+  },
+  handler: async (ctx, { username }) => {
+    const store = await getUserByUsername(ctx.db, username);
+    const products = await getProductsByClerkId(ctx.db, store?.clerkId!);
+    return { store, products };
   },
 });
