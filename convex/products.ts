@@ -126,3 +126,22 @@ export const getStorePage = query({
     return { store, products };
   },
 });
+
+export const getStoreProduct = query({
+  args: {
+    productId: v.string(),
+  },
+  handler: async (ctx, { productId }) => {
+    const product = await ctx.db.get(productId as Id<"products">);
+
+    if (!product) {
+      return null;
+    }
+
+    const user = await getUserByClerkId(ctx.db, product.clerkId);
+
+    const sales = await getSalesByProductId(ctx.db, productId);
+
+    return { ...product, user, sales: sales.length };
+  },
+});
