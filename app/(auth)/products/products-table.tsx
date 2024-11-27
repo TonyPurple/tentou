@@ -22,7 +22,8 @@ import { Doc } from "@/convex/_generated/dataModel";
 import { CustomImage } from "@/components/custom-image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/formatPrice";
-import { AlertDialog } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { DeleteProductDialog } from "@/app/(auth)/products/delete-product-dialog";
 
 type Props = {
   products: (Doc<"products"> & {
@@ -91,9 +92,12 @@ export function ProductsTable({ products }: Props) {
                     <Link href={`/products/edit/${product._id}`}>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                    </AlertDialogTrigger>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <DeleteProductDialog product={product} />
               </AlertDialog>
             </TableCell>
           </TableRow>

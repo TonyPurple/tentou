@@ -1,5 +1,11 @@
 import { ConvexError, v } from "convex/values";
-import { getProductsByClerkId, getSalesByProductId, getUserByClerkId, mutationWithUser, queryWithUser } from "./utils";
+import {
+  getProductsByClerkId,
+  getSalesByProductId,
+  getUserByClerkId,
+  mutationWithUser,
+  queryWithUser,
+} from "./utils";
 import { Id } from "./_generated/dataModel";
 
 export const getProduct = queryWithUser({
@@ -90,5 +96,20 @@ export const updateProduct = mutationWithUser({
       content,
       published,
     });
+  },
+});
+
+export const deleteProduct = mutationWithUser({
+  args: {
+    productId: v.id("products"),
+  },
+  handler: async (ctx, { productId }) => {
+    const product = await ctx.db.get(productId);
+
+    if (ctx.userId !== product?.clerkId) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    await ctx.db.delete(productId);
   },
 });
