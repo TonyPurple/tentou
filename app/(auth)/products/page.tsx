@@ -1,14 +1,19 @@
-import Link from "next/link";
-import { ContentLayout } from "../content-layout";
+import { ContentLayout } from "@/app/(auth)/content-layout";
+import { ProductsTable } from "@/app/(auth)/products/products-table";
 import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
+import { getAuthToken } from "@/lib/getAuthToken";
+import { fetchQuery } from "convex/nextjs";
+import Link from "next/link";
 
 export const metadata = {
-  name: "products",
   title: "Products",
-  description: "Products",
 };
 
-export default function Page() {
+export default async function Page() {
+  const token = await getAuthToken();
+  const products = await fetchQuery(api.products.getProducts, {}, { token });
+
   return (
     <ContentLayout
       title="Products"
@@ -19,7 +24,7 @@ export default function Page() {
         </Link>
       }
     >
-      products
+      <ProductsTable products={products} />
     </ContentLayout>
   );
 }

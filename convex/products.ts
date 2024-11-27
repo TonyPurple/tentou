@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutationWithUser, queryWithUser } from "./utils";
+import { getProductsByClerkId, getSalesByProductId, getUserByClerkId, mutationWithUser, queryWithUser } from "./utils";
 import { Id } from "./_generated/dataModel";
 
 export const getProduct = queryWithUser({
@@ -8,6 +8,29 @@ export const getProduct = queryWithUser({
   },
   handler: (ctx, { productId }) => {
     return ctx.db.get(productId as Id<"products">);
+  },
+});
+
+export const getProducts = queryWithUser({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getUserByClerkId(ctx.db, ctx.userId!);
+    const products = await getProductsByClerkId(ctx.db, ctx.userId!);
+
+    const productsWithRevenue = await Promise.all(
+      products.map(async (product) => {
+        const sales = await getSalesByProductId(ctx.db, product._id);
+
+        return {
+          ...product,
+          sales: sales.length,
+          user,
+          revenue: sales.reduce((acc, sale) => acc + sale.price, 0),
+        };
+      })
+    );
+
+    return productsWithRevenue;
   },
 });
 
