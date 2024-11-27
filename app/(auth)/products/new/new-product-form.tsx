@@ -1,5 +1,6 @@
 "use client";
 
+import { ProductContentEditor } from "@/app/(auth)/products/product-content-editor";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -162,7 +163,12 @@ export function NewProductForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Content</FormLabel>
-              <FormControl />
+              <FormControl>
+                <ProductContentEditor
+                  content={field.value}
+                  onContentUpdate={field.onChange}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
