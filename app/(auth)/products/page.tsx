@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { ContentLayout } from "../content-layout";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   name: "products",
@@ -11,6 +13,11 @@ export default function Page() {
     <ContentLayout
       title="Products"
       description="Manage your products and view their sales performance"
+      action={
+        <Link href="/products/new">
+          <Button>New Product</Button>
+        </Link>
+      }
     >
       products
     </ContentLayout>
