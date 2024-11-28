@@ -72,3 +72,36 @@ export const pay = action({
     return session.url;
   },
 });
+
+export const fulfill = internalAction({
+  args: {
+    payload: v.string(),
+    signature: v.string(),
+  },
+  handler: async (ctx, { payload, signature }) => {
+    try {
+      const event = Stripe.webhooks.constructEvent(
+        payload,
+        signature,
+        process.env.STRIPE_WEBHOOK_SECRET
+      );
+
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object as Stripe.Checkout.Session;
+
+        await ctx.runMutation(internal.stripe_utils.fulfillPurchase, {
+          storeClerkId: session.metadata.storeClerkId,
+          customerClerkId: session.metadata.customerClerkId,
+          productId: session.metadata.productId,
+          price: Number(session.metadata.price),
+          currency: session.metadata.currency,
+        });
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.log(error);
+      return { success: false, error: error.message };
+    }
+  },
+});

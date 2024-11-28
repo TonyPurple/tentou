@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { internalQuery } from "./_generated/server";
+import { internalMutation, internalQuery } from "./_generated/server";
 import { getKeyByClerkId, getUserByClerkId } from "./utils";
 
 export const getStoreStripeKey = internalQuery({
@@ -27,5 +27,18 @@ export const getProduct = internalQuery({
   },
   handler: (ctx, { productId }) => {
     return ctx.db.get(productId);
+  },
+});
+
+export const fulfillPurchase = internalMutation({
+  args: {
+    storeClerkId: v.string(),
+    customerClerkId: v.string(),
+    productId: v.id("products"),
+    price: v.number(),
+    currency: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("sales", { ...args });
   },
 });
