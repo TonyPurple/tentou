@@ -4,6 +4,7 @@ import { api } from "@/convex/_generated/api";
 import { getAuthToken } from "@/lib/getAuthToken";
 import { fetchQuery } from "convex/nextjs";
 import { Barcode, CreditCard, DollarSign } from "lucide-react";
+import { DashboardSales } from "./dashboard-sales";
 
 export default async function DashboardPage() {
   const token = await getAuthToken();
@@ -31,6 +32,7 @@ export default async function DashboardPage() {
           icon={<Barcode className="size-5 text-muted-foreground" />}
         />
       </div>
+      <DashboardSales />
     </ContentLayout>
   );
 }
