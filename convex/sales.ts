@@ -1,11 +1,12 @@
+import dayjs from "dayjs";
+import { formatPrice } from "../lib/formatPrice";
 import {
   getProductsByClerkId,
   getSalesByStoreClerkId,
+  getUserByClerkId,
   queryWithUser,
 } from "./utils";
-import { formatPrice } from "../lib/formatPrice";
-import dayjs from "dayjs";
-import { Doc } from "./_generated/dataModel";
+import { Doc, Id } from "./_generated/dataModel";
 
 export const getDashboardStats = queryWithUser({
   args: {},
@@ -61,3 +62,27 @@ function calculateRevenueForDay(dayName: string, sales: Doc<"sales">[]) {
     .filter((sale) => dayjs(sale._creationTime).format("dddd") === dayName)
     .reduce((acc, sale) => acc + sale.price, 0);
 }
+
+export const getAllSales = queryWithUser({
+  args: {},
+  handler: async (ctx) => {
+    const sales = await getSalesByStoreClerkId(ctx.db, ctx.userId!);
+
+    const salesWithMetadata = await Promise.all(
+      sales.map(async (sale) => {
+        const customer = await getUserByClerkId(ctx.db, sale.customerClerkId);
+        const product = await ctx.db.get(sale.productId as Id<"products">);
+
+        return {
+          ...sale,
+          customerLogo: customer?.logo,
+          customerName: customer?.name,
+          productName: product?.name,
+          customerEmail: customer?.email,
+        };
+      })
+    );
+
+    return salesWithMetadata;
+  },
+});
