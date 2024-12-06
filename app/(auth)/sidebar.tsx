@@ -62,7 +62,7 @@ export function Sidebar() {
         <div className="flex h-14 mb-4 items-center border-b px-4">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Package2 className="size-6" />
-            <span>Next Storefront</span>
+            <span>Tentou Storefront</span>
           </Link>
         </div>
 
